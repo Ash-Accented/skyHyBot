@@ -1,0 +1,20 @@
+{
+  "name": "skyhybot",
+  "version": "1.0.0",
+  "description": "A Hypixel skyblock bot designed for the purpose of returning profile, island, and general stats. ",
+  "homepage": "https://github.com/Ash-Accented/skyHyBot#readme",
+  "bugs": {
+    "url": "https://github.com/Ash-Accented/skyHyBot/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/Ash-Accented/skyHyBot.git"
+  },
+  "license": "SEE LICENSE IN ./LICENSE",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
