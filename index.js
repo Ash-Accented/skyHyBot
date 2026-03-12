@@ -10,6 +10,25 @@ if (typeof globalThis.setTimeout === 'function'){
   };
 }
 
+async function listOfItems () {
+  console.log(itemNames);
+  var arrayStrings = [];
+  fetch("https://api.hypixel.net/v2/skyblock/bazaar")
+    .then(response => response.json())
+    .then( data => {
+      let dataEntries = data.products;
+      for (var key in dataEntries) {
+        arrayStrings.push(key);
+      }
+      console.log(arrayStrings);
+      return arrayStrings;
+
+    })
+    .catch(error => {
+      console.error("Error fetching names:", error);
+    })
+}
+
 const deployCommands = async () => {
   //Deploy Command Logic
   try {
@@ -20,6 +39,7 @@ const deployCommands = async () => {
     {
       const command = require(`./commands/${file}`);
       if ('data' in command && 'execute' in command){
+        
         commands.push(command.data.toJSON());
       } else {
         console.log(`WARNING: The command at ${file} is missing a required 'data' or 'execute' property`);
@@ -86,28 +106,36 @@ for (const file of commandFiles) {
   }
 }
 client.on(Events.InteractionCreate, async (interaction) => {
-	if (!interaction.isChatInputCommand()) return;
-  const command = client.commands.get(interaction.commandName);
-  
-  if (!command) return;
 	//if (interaction.commandName === 'pork') {
 	//	await interaction.deferReply(); 
 		// you can do things that take time here (database queries, api requests, ...) that you need for the initial response
 		// you can take up to 15 minutes, then the interaction token becomes invalid!
 	//	await interaction.editReply('Pong!'); 
 //	}
-
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true});
+  if (interaction.isChatInputCommand()) {
+    const command = client.commands.get(interaction.commandName);
+    if (!command) return;
+    try {
+      await command.execute(interaction);
+    } catch (error) {
+      console.error(error);
+      if (interaction.replied || interaction.deferred) {
+        await interaction.followUp({ content: 'There was an error while executing this command!', ephemeral: true});
+      }
+      else {
+        await interaction.reply({ content: 'There was an error while executing this command', ephemeral: true});
+      }
     }
-    else {
-      await interaction.reply({ content: 'There was an error while executing this command', ephemeral: true});
+  } else if (interaction.isAutocomplete()) {
+    const command = interaction.client.commands.get(interaction.commandName);
+    if (!command) return;
+    try {
+      await command.autocomplete(interaction);
+    } catch (error) {
+      console.error(error);
     }
-  }
+  } else return;
+  
 });
 client.once(Events.ClientReady, async () => {
     console.log(`Ready! Logged in as ${client.user.tag}`); //Show the bot's name in the console
